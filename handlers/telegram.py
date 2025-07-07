@@ -90,7 +90,8 @@ app.add_handler(CommandHandler("candle_delta", candle_delta_command))
 app.add_handler(CommandHandler("hedge", hedge_command))
 app.add_handler(CommandHandler("grid", grid_command))
 
-# === Inicialização do bot ===
 async def start_bot():
     await app.initialize()
     await app.start()
+    await app.updater.start_polling()
+    print("✅ Bot do Telegram iniciado e escutando comandos...")

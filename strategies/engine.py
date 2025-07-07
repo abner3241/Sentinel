@@ -1,3 +1,5 @@
+# strategies/engine.py
+
 import os
 import asyncio
 from exchange_factory import get_exchange
@@ -21,11 +23,11 @@ async def engine_loop():
 
     while True:
         try:
-            symbols = await client.get_trading_symbols()
+            symbols = client.get_trading_symbols()
 
             for symbol in symbols:
                 try:
-                    price = await client.get_price(symbol)
+                    price = client.get_price(symbol)
                     rsi = await get_latest_rsi(symbol)
                     bollinger = await get_latest_bollinger(symbol)
                     prediction = predict_latest(symbol)
@@ -73,10 +75,10 @@ async def engine_loop():
                     grid_strategy(symbol, price * 0.95, price * 1.05, levels=5, size=size)
 
                 except Exception as e:
-                    print(f"[ERRO símbolo {symbol}]: {e}")
+                    print(f"[ERRO símbolo {symbol}]: {e}", flush=True)
 
         except Exception as e:
-            print(f"[ERRO geral da engine]: {e}")
+            print(f"[ERRO geral da engine]: {e}", flush=True)
 
         await asyncio.sleep(60)
 

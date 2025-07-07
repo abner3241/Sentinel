@@ -2,6 +2,7 @@
 
 import os
 from typing import List
+import pandas as pd
 from exchange_factory import get_exchange
 
 
@@ -41,3 +42,10 @@ async def get_atr(symbol: str, period: int = 14, interval: str = '1h') -> float:
     closes = [float(k['close']) for k in klines]
 
     return calculate_atr(highs, lows, closes, period)
+
+
+async def get_latest_atr(symbol: str, interval: str = '1h', period: int = 14) -> float:
+    """
+    Wrapper semântico usado pela engine para obter o ATR mais recente.
+    """
+    return await get_atr(symbol, period=period, interval=interval)
