@@ -1,9 +1,9 @@
 from utils.twitter_stream import twitter_loop
 from utils.news_stream import news_loop
 from utils.rl_agent import RLAgent
-from utils.daily_report import send_daily_report
+from utils.daily_report import generate_daily_report
 import asyncio
-from services.engine import start_engine
+from strategies.engine import start_engine
 
 async def technical_loop():
     # Technical analysis loop
