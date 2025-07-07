@@ -12,6 +12,7 @@ from utils.hedge_strategies import hedge_market_neutral, grid_strategy
 print(f"🔑 TOKEN DETECTADO: {os.getenv('TELEGRAM_BOT_TOKEN')}")
 
 app = ApplicationBuilder().token(os.getenv('TELEGRAM_BOT_TOKEN')).build()
+bot = app.bot
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("CriptoSentinel iniciado!")

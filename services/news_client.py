@@ -1,4 +1,3 @@
-
 import httpx
 from utils.config_manager import ConfigManager
 
@@ -13,3 +12,9 @@ class NewsClient:
             resp = await client.get(url, params=params)
             data = resp.json()
         return data.get("articles", [])
+
+# 🔧 Adicionado para resolver o import esperado
+news_client = NewsClient()
+
+async def get_headlines(query="crypto", page_size=10):
+    return await news_client.fetch_news(query=query, page_size=page_size)
