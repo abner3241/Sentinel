@@ -1,24 +1,34 @@
+# services/binance_client.py
 
 import asyncio
-from pybit.unified_trading import HTTP as usdt_perpetual
+import requests
+
 
 class BinanceClient:
-# [AUTO-FIXED]     def __init__(self, api_key=None, None, testnet=False):
-# [AUTO-FIXED]          if testnet else "https://api.binance.com"
-        self._client = usdt_perpetual(api_key, api_secret)
+    def __init__(self, *args, **kwargs):
+        # Cliente simples baseado na API pública da Binance
+        self.base_url = "https://api.binance.com"
 
-# [AUTO-FIXED]     async def get_klines(self, symbol: str, interval: str = "1m", limit: int = 500):
-        # Pybit client is synchronous; wrap in executor if needed
-# [AUTO-FIXED]         return await asyncio.to_thread(self._client.query_kline, symbol=symbol, interval=interval, limit=limit)
+    async def get_klines(self, symbol: str, interval: str = "1m", limit: int = 500):
+        """
+        Retorna candles (klines) da Binance usando a API pública.
+        """
+        url = f"{self.base_url}/api/v3/klines"
+        params = {
+            "symbol": symbol,
+            "interval": interval,
+            "limit": limit
+        }
+        return await asyncio.to_thread(lambda: requests.get(url, params=params).json())
 
-# [AUTO-FIXED]     async def place_order(self, symbol: str, side: str, qty: float, price: float = None, order_type: str = "Market"):
-        params = {"symbol": symbol, "side": side, "order_type": order_type, "qty": qty}
-        if price:
-            params["price"] = price
-# [AUTO-FIXED]         return await asyncio.to_thread(self._client.place_active_order, **params)
+    async def place_order(self, *args, **kwargs):
+        """
+        Placeholder: BinanceClient não implementa ordens nesta versão.
+        """
+        raise NotImplementedError("place_order não implementado para BinanceClient")
 
-
-async def get_balance(self):
-    """Retorna o saldo da conta."""
-    # Para Binance USDT perpetual
-    return await asyncio.to_thread(self._client.get_wallet_balance)
+    async def get_balance(self):
+        """
+        Placeholder: saldo não disponível via API pública da Binance.
+        """
+        return {"balance": "N/A (BinanceClient não autenticado)"}
