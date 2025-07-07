@@ -16,10 +16,10 @@ app.include_router(dashboard_router, prefix="/api")
 @app.on_event("startup")
 async def on_startup():
     tasks.start_tasks()
-    loop = asyncio.get_event_loop()
-    loop.create_task(start_bot())
+    # 🔧 Corrigido: use asyncio.create_task ao invés de loop.create_task
+    asyncio.create_task(start_bot())
 
 
 @app.on_event("shutdown")
 async def on_shutdown():
-    pass
+    print("🔻 CriptoSentinel desligando...")  # ou logging.info(...)

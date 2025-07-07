@@ -1,18 +1,23 @@
 import os
-import asyncio
 from dotenv import load_dotenv
-load_dotenv()
+import asyncio
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+
 from utils.pyramiding import calculate_pyramiding_targets
 from utils.trailing_stop import compute_vwap, trailing_stop_vwap, compute_pivots
 from utils.order_flow import compute_candle_delta
 from utils.hedge_strategies import hedge_market_neutral, grid_strategy
 
-print(f"🔑 TOKEN DETECTADO: {os.getenv('TELEGRAM_BOT_TOKEN')}")
+# Carrega variáveis do .env
+load_dotenv()
 
-app = ApplicationBuilder().token(os.getenv('TELEGRAM_BOT_TOKEN')).build()
+# Inicializa o bot
+print(f"🔑 TOKEN DETECTADO: {os.getenv('TELEGRAM_BOT_TOKEN')}")
+app = ApplicationBuilder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
 bot = app.bot
+
+# === Comandos do bot ===
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("CriptoSentinel iniciado!")
@@ -24,7 +29,7 @@ async def pyramiding_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
     entry = float(args[0])
     size = float(args[1]) if len(args) > 1 else 1.0
-    targets = calculate_pyramiding_targets(entry, [0.005,0.015,0.03], size)
+    targets = calculate_pyramiding_targets(entry, [0.005, 0.015, 0.03], size)
     msg = "\n".join(f"Sell {t['qty']} @ {t['price']}" for t in targets)
     await update.message.reply_text(msg)
 
@@ -38,7 +43,11 @@ async def trailing_stop_command(update: Update, context: ContextTypes.DEFAULT_TY
     vwap = compute_vwap(symbol)
     stop = trailing_stop_vwap(symbol, side, offset)
     piv = compute_pivots(symbol)
-    msg = f"VWAP: {vwap:.4f}\nStop: {stop:.4f}\nPivot={piv['pivot']:.4f}, R1={piv['r1']:.4f}, S1={piv['s1']:.4f}"
+    msg = (
+        f"VWAP: {vwap:.4f}\n"
+        f"Stop: {stop:.4f}\n"
+        f"Pivot={piv['pivot']:.4f}, R1={piv['r1']:.4f}, S1={piv['s1']:.4f}"
+    )
     await update.message.reply_text(msg)
 
 async def candle_delta_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -73,7 +82,7 @@ async def grid_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = "\n".join(str(o) for o in orders)
     await update.message.reply_text(msg)
 
-# Register handlers
+# === Registro dos comandos ===
 app.add_handler(CommandHandler("start", start_command))
 app.add_handler(CommandHandler("pyramiding", pyramiding_command))
 app.add_handler(CommandHandler("trailing_stop", trailing_stop_command))
@@ -81,5 +90,7 @@ app.add_handler(CommandHandler("candle_delta", candle_delta_command))
 app.add_handler(CommandHandler("hedge", hedge_command))
 app.add_handler(CommandHandler("grid", grid_command))
 
+# === Inicialização do bot ===
 async def start_bot():
-    await asyncio.to_thread(app.run_polling)
+    await app.initialize()
+    await app.start()

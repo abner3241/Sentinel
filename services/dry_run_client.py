@@ -28,6 +28,7 @@ class DryRunClient:
         Simula uma ordem colocada e armazena localmente.
         """
         order = {
+            "id": f"order_{len(self.orders)}",
             "symbol": symbol,
             "side": side,
             "qty": qty,
@@ -42,3 +43,37 @@ class DryRunClient:
         Retorna o saldo simulado.
         """
         return {"balance": self._balance}
+
+    def get_price(self, symbol: str):
+        """
+        Retorna um preço simulado para o ativo.
+        """
+        return random.uniform(20000, 30000)
+
+    def get_trading_symbols(self):
+        """
+        Retorna uma lista de símbolos simulados.
+        """
+        return ["BTCUSDT", "ETHUSDT"]
+
+    def place_limit_order(self, symbol, side, qty, price):
+        """
+        Simula ordem limite.
+        """
+        order = {
+            "id": f"limit_{len(self.orders)}",
+            "symbol": symbol,
+            "side": side,
+            "qty": qty,
+            "price": price,
+            "type": "limit",
+            "status": "open"
+        }
+        self.orders.append(order)
+        return order
+
+    def modify_order_stop(self, order_id, stop_price):
+        """
+        Simula modificação de stop.
+        """
+        return {"id": order_id, "new_stop": stop_price}

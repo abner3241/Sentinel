@@ -9,6 +9,12 @@ def get_exchange(name: str, **kwargs):
     elif name == 'bybit':
         return BybitClient(**kwargs)
     elif name == 'dryrun':
-        return DryRunClient()
+        return EnhancedDryRunClient()
     else:
         raise ValueError(f'Unknown exchange: {name}')
+
+# Extensão do cliente dryrun para testes locais
+class EnhancedDryRunClient(DryRunClient):
+    def get_trading_symbols(self):
+        # Simula dois ativos padrão
+        return ["BTCUSDT", "ETHUSDT"]
