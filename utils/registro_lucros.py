@@ -2,6 +2,9 @@ import json
 from pathlib import Path
 from datetime import datetime, date
 from typing import Dict, Any, List, Optional
+import pandas as pd
+
+HISTORICO_PATH = Path("historico_sinais.json")  # caminho padrão usado por outras funções
 
 def load_signals(signals_file: Path) -> List[Dict[str, Any]]:
     """Carrega sinais de um arquivo JSON."""
@@ -12,31 +15,32 @@ def load_signals(signals_file: Path) -> List[Dict[str, Any]]:
         return []
 
 def compute_metrics(signals_file: Path) -> Dict[str, Dict[str, Any]]:
-# [AUTO-FIXED]     Computa métricas por estratégia e ativo:
-# [AUTO-FIXED]     - acertos: contagem de sinais com pnl > 0
-# [AUTO-FIXED]     - erros: contagem de sinais com pnl <= 0
-# [AUTO-FIXED]     - lucro_total: soma de pnl positivo
-# [AUTO-FIXED]     - execucoes: total de sinais
-# [AUTO-FIXED]     - ult_execucao: timestamp ISO da última execução
+    """Computa métricas por estratégia e ativo."""
     signals = load_signals(signals_file)
     metrics: Dict[str, Dict[str, Any]] = {}
+
     for s in signals:
         strat = s.get('strategy', 'default')
-        asset = s.get('symbol', s.get('symbol', 'unknown'))
+        asset = s.get('symbol', 'unknown')
         key = f"{strat}/{asset}"
-# [AUTO-FIXED]         m = metrics.setdefault(key, {
-# [AUTO-FIXED]             'acertos': 0,
-# [AUTO-FIXED]             'erros': 0,
-# [AUTO-FIXED]             'lucro_total': 0.0,
-# [AUTO-FIXED]             'execucoes': 0,
-# [AUTO-FIXED]             'ult_execucao': None
+
+        m = metrics.setdefault(key, {
+            'acertos': 0,
+            'erros': 0,
+            'lucro_total': 0.0,
+            'execucoes': 0,
+            'ult_execucao': None
+        })
+
         pnl = s.get('pnl', 0.0)
         if pnl > 0:
             m['acertos'] += 1
             m['lucro_total'] += pnl
         else:
             m['erros'] += 1
+
         m['execucoes'] += 1
+
         ts = s.get('timestamp')
         if ts:
             try:
@@ -45,13 +49,15 @@ def compute_metrics(signals_file: Path) -> Dict[str, Dict[str, Any]]:
                     m['ult_execucao'] = dt.isoformat()
             except ValueError:
                 pass
+
     return metrics
 
 def get_daily_pnl(signals_file: Path, target_date: Optional[date] = None) -> float:
-# [AUTO-FIXED]     Retorna o PnL total do dia especificado (ou de hoje, por padrão).
+    """Retorna o PnL total do dia especificado (ou de hoje, por padrão)."""
     signals = load_signals(signals_file)
     total = 0.0
     date_obj = target_date or date.today()
+
     for s in signals:
         ts = s.get('timestamp')
         pnl = s.get('pnl', 0.0)
@@ -62,5 +68,16 @@ def get_daily_pnl(signals_file: Path, target_date: Optional[date] = None) -> flo
                     total += pnl
             except ValueError:
                 pass
+
     return total
-# [AUTO-FIXED] )}
+
+def get_historic_pnl(days: int = 30) -> pd.DataFrame:
+    """Retorna o DataFrame de PnL diário dos últimos X dias."""
+    try:
+        df = pd.read_json(HISTORICO_PATH)
+        df['data'] = pd.to_datetime(df['data'])
+        df = df.sort_values('data', ascending=False).head(days)
+        return df[['data', 'pnl']]
+    except Exception as e:
+        print(f"[ERRO] Falha ao carregar histórico de lucros: {e}")
+        return pd.DataFrame(columns=['data', 'pnl'])
