@@ -205,3 +205,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# === Arquivos sensíveis específicos do Sentinel ===
+sinais.json
+historico_sinais.json
