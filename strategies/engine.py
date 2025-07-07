@@ -23,7 +23,7 @@ async def engine_loop():
 
     while True:
         try:
-            symbols = client.get_trading_symbols()
+            symbols = await client.get_trading_symbols()
 
             for symbol in symbols:
                 try:
