@@ -1,11 +1,16 @@
-from typing import List
+# utils/atr.py
+
 import os
+from typing import List
 from exchange_factory import get_exchange
 
+
 def calculate_atr(highs: List[float], lows: List[float], closes: List[float], period: int = 14) -> float:
-    """Calcula o Average True Range (ATR) a partir de listas de highs, lows e closes."""
+    """
+    Calcula o Average True Range (ATR) com base nas listas de preços.
+    Se não houver dados suficientes, retorna uma média simples da amplitude.
+    """
     if len(highs) < period + 1 or len(lows) < period + 1 or len(closes) < period + 1:
-        # Dados insuficientes, fallback para média simples da amplitude
         trs = [highs[i] - lows[i] for i in range(1, len(highs))]
         return sum(trs) / len(trs) if trs else 0.0
 
@@ -20,14 +25,17 @@ def calculate_atr(highs: List[float], lows: List[float], closes: List[float], pe
 
     return sum(trs[-period:]) / period
 
-def get_atr(symbol: str, period: int = 14) -> float:
-    """Retorna o ATR do símbolo consultando a exchange."""
+
+async def get_atr(symbol: str, period: int = 14, interval: str = '1h') -> float:
+    """
+    Recupera candles da exchange e calcula o ATR do símbolo especificado.
+    """
     client = get_exchange(
-        'bybit',
-        os.getenv('BYBIT_API_KEY'),
-        os.getenv('BYBIT_API_SECRET')
+        os.getenv('EXCHANGE', 'dryrun'),
+        api_key=os.getenv('BYBIT_API_KEY'),
+        api_secret=os.getenv('BYBIT_API_SECRET')
     )
-    klines = client.get_klines(symbol=symbol, interval='1h', limit=period + 1)
+    klines = await client.get_klines(symbol=symbol, interval=interval, limit=period + 1)
     highs = [float(k['high']) for k in klines]
     lows = [float(k['low']) for k in klines]
     closes = [float(k['close']) for k in klines]
