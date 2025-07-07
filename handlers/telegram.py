@@ -1,10 +1,15 @@
 import os
+import asyncio
+from dotenv import load_dotenv
+load_dotenv()
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from utils.pyramiding import calculate_pyramiding_targets
 from utils.trailing_stop import compute_vwap, trailing_stop_vwap, compute_pivots
 from utils.order_flow import compute_candle_delta
 from utils.hedge_strategies import hedge_market_neutral, grid_strategy
+
+print(f"🔑 TOKEN DETECTADO: {os.getenv('TELEGRAM_BOT_TOKEN')}")
 
 app = ApplicationBuilder().token(os.getenv('TELEGRAM_BOT_TOKEN')).build()
 
@@ -75,5 +80,5 @@ app.add_handler(CommandHandler("candle_delta", candle_delta_command))
 app.add_handler(CommandHandler("hedge", hedge_command))
 app.add_handler(CommandHandler("grid", grid_command))
 
-if __name__ == '__main__':
-    app.run_polling()
+async def start_bot():
+    await asyncio.to_thread(app.run_polling)
