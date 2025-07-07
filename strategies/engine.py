@@ -16,9 +16,7 @@ PREDICTION_THRESHOLD = float(os.getenv("PREDICTION_THRESHOLD", 0.6))
 
 async def engine_loop():
     exchange_name = os.getenv('EXCHANGE', 'dryrun')
-    api_key = os.getenv('BYBIT_API_KEY')
-    api_secret = os.getenv('BYBIT_API_SECRET')
-    client = get_exchange(exchange_name, api_key, api_secret)
+    client = get_exchange(exchange_name)  # Corrigido: apenas 1 argumento
 
     while True:
         symbols = client.get_trading_symbols()
