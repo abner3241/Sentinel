@@ -1,0 +1,55 @@
+## v40.0.0
+
+- Adiciona engine_loop em core/tasks.py
+- Cria exchange_factory.py
+- Restaura módulos legados em services/
+- Adiciona documentação em docs/
+
+- Implementação de avg_buy real em utils/avg_buy.py para o comando /avg.
+- Removidas referências a main/start_app em scripts/run.py para evitar ImportError.
+- Removido `def main()` em scripts/run.py e adicionado chamada a `start_bot()` no bloco `__main__`.
+- Corrigidos erros de sintaxe em handlers/telegram.py, services/binance_client.py e services/bybit_client.py.
+- v41.1.0: Adicionado position sizing baseado em ATR (utils/atr.py, utils/risk_manager.py e engine.py).
+- v41.2.0: Adicionado stop-loss e take-profit adaptativos via ATR (utils/stop_levels.py e engine.py).
+- v41.3.0: Implementação de confirmação multi-timeframe via utils/multi_tf.py e ajustes em engine.py.
+- v41.4.0: Adicionado análise de Order Flow (utils/order_flow.py) e filtro em engine.py.
+- v41.5.0: Adicionado utils/execution.py com TWAP e simulação de slippage.
+- v41.6.0: Adicionado relatório diário automatizado via utils/daily_report e loop em core/tasks.py.
+- v41.7.0: Adicionado A/B testing de estratégias (utils/ab_test.py e handler /ab_test).
+- v41.8.0: Stub para Walk-Forward analysis (utils/walk_forward.py), comando CLI `walk-forward` e handler `/walkforward`.
+- v41.9.0: Stub de simulação Monte Carlo (utils/monte_carlo.py), comando CLI `monte-carlo` e handler `/montecarlo`.
+- v41.10.0: Stub de métricas on-chain (utils/onchain_metrics.py), comando CLI `onchain` e handler `/onchain`.
+- v41.11.0: Adicionado stub de Reinforcement Learning (utils/rl_agent.py) e rl_loop em core/tasks.py.
+- v41.12.0: Adicionado classificação de regime de mercado (utils/market_regime.py) e filtro em engine.py para pular mercados sideways.
+- v41.13.0: Stub para modelos de série temporal (utils/ts_model.py), integração em engine.py, comando CLI `ts-predict` e handler `/predict`.
+- v41.14.0: Integração real de NewsAPI (services/news_client.py), news_loop em core/tasks.py e comando /headlines.
+- v41.15.0: Stub de hedge market-neutral e grid trading (utils/hedge_strategies.py), comandos CLI `hedge`, `grid` e handlers `/hedge`, `/grid`.
+- v41.16.0: Integração de Twitter Stream (utils/twitter_stream.py), twitter_loop em core/tasks.py e comando `/tweets`.
+- v41.17.0: Aperfeiçoado Monte Carlo em utils/monte_carlo.py com simulação real usando numpy e estatísticas agregadas.
+- v41.18.0: Implementação real de Walk-Forward em utils/walk_forward.py usando CLI backtest e janelas móveis.
+- v41.19.0: Finalizado pipeline de ML/IA: RLAgent e TS model carregam e salvam modelos com joblib.
+- v41.20.0: Adicionados testes de integração ponta-a-ponta (FastAPI, Telegram, CLI) e CI com GitHub Actions.
+- v42.0.0: Adicionados scripts de deploy avançado (canary, blue/green) e workflow GitHub Actions para CI/CD.
+- v43.0.0: Corrigidos erros de sintaxe, indentação e aspas residuais em arquivos Python.
+- v43.0.1: Corrigido parêntese não fechado em setup.py.
+- v43.0.2: Corrigido linhas soltas e sintaxe em core/tasks.py.
+- v43.0.3: Corrigida indentação em core/cli.py.
+- v43.0.4: Corrigidos literais não terminados em handlers/telegram.py.
+- v43.0.5: Corrigidos erros de sintaxe em services/binance_client.py e services/bybit_client.py.
+- v43.0.6: Limpados módulos em strategies/ e utils/ (fechamento de aspas, parênteses e remoção de linhas soltas).
+- v44.0.0: Base consolidada e limpa; preparação final para release estável.
+- v44.1.0: Limpeza em lote de sintaxe e balanceamento de parênteses, colchetes e aspas em todos os módulos.
+- v45.0.0: Adicionados position sizing por ATR, Kelly criterion, circuit breaker e integração em engine.py, incluindo get_atr().
+- v46.0.0: Adicionado multi-take-profit e pyramiding (utils/pyramiding.py), integração em engine.py, CLI `pyramiding` e handler `/pyramiding`.
+- v47.0.0: Adicionado trailing stop VWAP/Pivot Points (utils/trailing_stop.py), integração em engine.py, CLI `trailing-stop` e handler `/trailing_stop`.
+- v48.0.0: Adicionado compute_candle_delta em utils/order_flow.py, check no engine.py, CLI `candle-delta` e handler `/candle_delta`.
+- v49.0.0: Pipeline de RL com PPO (stable-baselines3) e TS real com RandomForest.
+- v50.0.0: Adicionado market-neutral hedge e grid trading (utils/hedge_strategies.py), CLI `hedge`, `grid` e handlers `/hedge`, `/grid`.
+- v51.0.0: Limpeza automatizada de sintaxe, indentação e balanceamento de parênteses, chaves e aspas.
+- v51.1.0: Correção automática de sintaxe em módulos com erros, comentando linhas problemáticas.
+- v52.0.0: Correções manuais em core/cli.py, handlers/telegram.py, strategies/engine.py, utils/walk_forward.py
+- v53.0.0: Correção manual de linhas problemáticas em core/cli.py, handlers/telegram.py, strategies/engine.py e utils/walk_forward.py
+- v54.0.0: Correções manuais de sintaxe em core/cli.py, handlers/telegram.py e strategies/engine.py.
+
+- v57.0.0: Reconstruído totalmente strategies/engine.py para corrigir erro de sintaxe e manter funcionalidades.
+- v58.0.0: Reconstruídos core/cli.py e handlers/telegram.py para corrigir erros de indentação e sintaxe.

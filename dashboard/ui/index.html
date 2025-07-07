@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CriptoSentinel Dashboard</title>
+    <script>
+        async function fetchData(endpoint) {
+            const response = await fetch(`/api/${endpoint}`);
+            const data = await response.json();
+            document.getElementById(endpoint).textContent = JSON.stringify(data, null, 2);
+        }
+        function refreshAll() {
+            ["status", "signals", "logs", "performance"].forEach(fetchData);
+        }
+        setInterval(refreshAll, 5000);
+        window.onload = refreshAll;
+    </script>
+</head>
+<body>
+    <h1>CriptoSentinel Dashboard</h1>
+    <h2>Status</h2>
+    <pre id="status"></pre>
+    <h2>Signals</h2>
+    <pre id="signals"></pre>
+    <h2>Logs</h2>
+    <pre id="logs"></pre>
+    <h2>Performance</h2>
+    <pre id="performance"></pre>
+
+<h2>Configuração de Tuning</h2>
+<label>RSI Threshold: <input type="text" id="rsi_threshold"/></label>
+<button onclick="updateThreshold('RSI_THRESHOLD')">Atualizar RSI</button><br/>
+<label>Prediction Threshold: <input type="text" id="prediction_threshold"/></label>
+<button onclick="updateThreshold('PREDICTION_THRESHOLD')">Atualizar Predição</button><br/>
+<button onclick="retrain()">Retrain Now</button>
+<h3>Config Atual</h3>
+<pre id="config"></pre>
+
+<script>
+async function fetchAll() {
+    refreshAll();
+    // Fetch and display config
+    const response = await fetch('/api/config');
+    const config = await response.json();
+    document.getElementById('config').textContent = JSON.stringify(config, null, 2);
+    document.getElementById('rsi_threshold').value = config.RSI_THRESHOLD || '';
+    document.getElementById('prediction_threshold').value = config.PREDICTION_THRESHOLD || '';
+}
+async function updateThreshold(key) {
+    const value = document.getElementById(key.toLowerCase() + '_threshold').value;
+    await fetch('/api/config', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({key: key, value: value})
+    });
+    fetchAll();
+}
+async function retrain() {
+    await fetch('/api/retrain', {method: 'POST'});
+}
+// Override previous intervals
+if (typeof refreshAll === 'undefined') {
+    function refreshAll() {}
+}
+setInterval(fetchAll, 5000);
+window.onload = fetchAll;
+</script>
+
+</body>
+</html>

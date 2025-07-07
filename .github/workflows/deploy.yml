@@ -1,0 +1,43 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - run: docker build -t ${{ secrets.DOCKER_IMAGE }}:${{ github.sha }} .
+      - run: docker push ${{ secrets.DOCKER_IMAGE }}:${{ github.sha }}
+
+  canary:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: bash scripts/deploy_canary.sh
+
+  approval:
+    needs: canary
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://your.production.url
+    steps:
+      - name: Await manual approval
+        uses: peter-evans/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: Deploy
+          required_approvals: 1
+
+  deploy:
+    needs: approval
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: bash scripts/deploy_blue_green.sh

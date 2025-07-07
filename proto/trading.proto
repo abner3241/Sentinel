@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package trading;
+
+service Trading {
+    // Get generated signals
+    rpc GetSignals (GetSignalsRequest) returns (GetSignalsResponse);
+    // Place an order
+    rpc PlaceOrder (PlaceOrderRequest) returns (PlaceOrderResponse);
+}
+
+message GetSignalsRequest {
+    int32 count = 1;
+}
+
+message Signal {
+    string id = 1;
+    string report = 2;
+}
+
+message GetSignalsResponse {
+    repeated Signal signals = 1;
+}
+
+message PlaceOrderRequest {
+    string symbol = 1;
+    string side = 2;
+    double qty = 3;
+    double price = 4;
+}
+
+message PlaceOrderResponse {
+    string order_id = 1;
+    string status = 2;
+}
