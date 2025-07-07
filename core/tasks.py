@@ -1,68 +1,57 @@
+import asyncio
+from datetime import datetime, timedelta
 from utils.twitter_stream import twitter_loop
 from utils.news_stream import news_loop
 from utils.rl_agent import RLAgent
 from utils.daily_report import generate_daily_report
-import asyncio
-from strategies.engine import start_engine
+from strategies.engine import engine_loop  # usamos diretamente o loop, não start_engine()
 
 async def technical_loop():
-    # Technical analysis loop
+    """Loop de análise técnica periódica (placeholder)."""
     while True:
-        # TODO: implement
+        # TODO: implementar análise técnica periódica
         await asyncio.sleep(60)
 
 async def ml_loop():
-    # ML model loop
+    """Loop de análise com modelo de machine learning (placeholder)."""
     while True:
-        # TODO: implement
+        # TODO: implementar predição periódica
         await asyncio.sleep(300)
 
-
-async def engine_loop():
-    """Loop for generating and executing signals."""
-    while True:
-        await start_engine()
-        await asyncio.sleep(1)  # adjust interval as needed
-
 async def agent_loop():
-    # Agent adjustment loop
+    """Loop de autoajuste de thresholds (placeholder)."""
     while True:
-        # TODO: implement
+        # TODO: implementar ajuste dinâmico com base em performance
         await asyncio.sleep(600)
 
-
 async def daily_report_loop():
-    """Loop que envia relatório diário via Telegram a cada 24h"""
+    """Envia relatório diário via Telegram a cada 24h."""
     while True:
-        # espera até meia-noite UTC
-        from datetime import datetime, timedelta
         now = datetime.utcnow()
-        # próximo dia 00:00 UTC
         next_run = datetime(now.year, now.month, now.day) + timedelta(days=1)
         delay = (next_run - now).total_seconds()
         await asyncio.sleep(delay)
-
+        generate_daily_report()
 
 async def rl_loop():
-    """Loop que treina e avalia o agente de RL periodicamente."""
-    agent = RLAgent(symbol=None)  # pode adaptar para múltiplos símbolos
+    """Treina e avalia periodicamente o agente de RL."""
+    agent = RLAgent(symbol=None)
     while True:
-        # Treina o agente
         agent.train(episodes=100)
-        # Espera um período (e.g., 6h) antes do próximo treino
         await asyncio.sleep(6 * 3600)
-        send_daily_report()
+        generate_daily_report()
 
 def start_tasks():
-    _task_list = []
+    """Inicia todas as tarefas assíncronas do sistema."""
     loop = asyncio.get_event_loop()
-    _task_list.append(loop.create_task(technical_loop()))
-    _task_list.append(loop.create_task(ml_loop()))
-    _task_list.append(loop.create_task(agent_loop()))
-    # Start engine
-    loop.create_task(start_engine())
-    return _task_list
+    loop.create_task(engine_loop())           # engine principal de trading
+    loop.create_task(technical_loop())        # futura análise técnica
+    loop.create_task(ml_loop())               # futuras predições ML
+    loop.create_task(agent_loop())            # futura adaptação de thresholds
+    loop.create_task(daily_report_loop())     # relatório diário
+    loop.create_task(rl_loop())               # agente de RL (opcional/teste)
 
 async def cancel_tasks():
+    """Cancela todas as tasks assíncronas pendentes."""
     for t in asyncio.all_tasks():
         t.cancel()

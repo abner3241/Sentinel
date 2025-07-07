@@ -71,3 +71,7 @@ async def engine_loop():
             grid_strategy(symbol, price * 0.95, price * 1.05, levels=5, size=size)
 
         await asyncio.sleep(60)
+
+def start_engine():
+    """Retorna a coroutine principal da engine para ser usada com loop.create_task()."""
+    return engine_loop()
